@@ -1,13 +1,28 @@
 #!/usr/bin/env node
 
-try {    
+// Load compiled output (dist/cjs) if available, fall back to ts-node for development
+let UAParser, extensions;
+try {
+    ({ UAParser } = require('../dist/cjs/main/ua-parser'));
+    extensions = require('../dist/cjs/extensions/ua-parser-extensions');
+} catch {
+    try {
+        require('ts-node').register({ transpileOnly: true, skipProject: true, compilerOptions: { module: 'CommonJS', esModuleInterop: true } });
+        ({ UAParser } = require('../src/main/ua-parser'));
+        extensions = require('../src/extensions/ua-parser-extensions');
+    } catch {
+        console.error('Build required: run "npm run build:ts" or install ts-node');
+        process.exit(1);
+    }
+}
+
+try {
     const fs = require('node:fs');
     const path = require('node:path');
     const { performance } = require('node:perf_hooks');
     const readline = require('node:readline');
     const { parseArgs } = require('node:util');
-    const UAParser = require('../src/main/ua-parser');
-    const { Bots, Emails, ExtraDevices, InApps, Vehicles } = require('../src/extensions/ua-parser-extensions');
+    const { Bots, Emails, ExtraDevices, InApps, Vehicles } = extensions;
 
     if (!process.argv[2].startsWith('-')) {
 
@@ -27,9 +42,9 @@ try {
 
         const startPerf = performance.now();
         const {
-            values: { 
-                'input-file': inputFile, 
-                'output-file': outputFile 
+            values: {
+                'input-file': inputFile,
+                'output-file': outputFile
             },
         } = parseArgs({
             options: {

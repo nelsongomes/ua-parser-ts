@@ -1,0 +1,160 @@
+"use strict";
+//////////////////////////////////////////////////
+/*  bot-detection submodule of UAParser.js v2.0.10
+    https://github.com/faisalman/ua-parser-js
+    Author: Faisal Salman <f@faisalman.com>
+    AGPLv3 License */
+/////////////////////////////////////////////////
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isAICrawler = exports.isAIAssistant = exports.isBot = void 0;
+const ua_parser_1 = require("../main/ua-parser");
+const ua_parser_extensions_1 = require("../extensions/ua-parser-extensions");
+const ua_parser_enums_1 = require("../enums/ua-parser-enums");
+const { Crawler, Fetcher } = ua_parser_enums_1.Extension.BrowserName;
+const UAParserNew = ua_parser_1.UAParser;
+class BotList {
+    constructor(ext, prop, list) {
+        this._cache = new Map();
+        this.ext = ext;
+        this.prop = prop;
+        this.list = list.map(x => x.toLowerCase());
+    }
+    includes(ua) {
+        var _a, _b;
+        let propValue;
+        if (typeof ua === 'string') {
+            if (this._cache.has(ua)) {
+                propValue = this._cache.get(ua);
+            }
+            else {
+                const browser = new UAParserNew(ua, this.ext).getBrowser();
+                propValue = (_a = browser[this.prop]) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+                this._cache.set(ua, propValue);
+            }
+        }
+        else {
+            propValue = (_b = ua.browser[this.prop]) === null || _b === void 0 ? void 0 : _b.toLowerCase();
+        }
+        return this.list.includes(propValue);
+    }
+}
+const BotTypes = new BotList(ua_parser_extensions_1.Bots, 'type', [
+    ua_parser_enums_1.BrowserType.CLI,
+    ua_parser_enums_1.BrowserType.CRAWLER,
+    ua_parser_enums_1.BrowserType.FETCHER,
+    ua_parser_enums_1.BrowserType.LIBRARY
+]);
+const AIAssistants = new BotList(ua_parser_extensions_1.Fetchers, 'name', [
+    // Amazon
+    Fetcher.AMAZON_NOVA_ACT,
+    // Anthropic
+    Fetcher.ANTHROPIC_CLAUDE_USER,
+    // Cohere
+    Fetcher.COHERE_AI,
+    // DuckDuckGo
+    Fetcher.DUCKDUCKGO_ASSISTBOT,
+    // Google
+    Fetcher.GOOGLE_GEMINI_DEEP_RESEARCH,
+    // Mistral AI
+    Fetcher.MISTRALAI_USER,
+    // OpenAI
+    Fetcher.OPENAI_CHATGPT_USER,
+    // Perplexity
+    Fetcher.PERPLEXITY_USER
+]);
+const AICrawlers = new BotList(ua_parser_extensions_1.Crawlers, 'name', [
+    // AI2
+    Crawler.AI2_BOT,
+    // Amazon
+    Crawler.AMAZON_BOT,
+    // Anthropic
+    Crawler.ANTHROPIC_AI,
+    Crawler.ANTHROPIC_CLAUDE_BOT,
+    Crawler.ANTHROPIC_CLAUDE_SEARCHBOT,
+    Crawler.ANTHROPIC_CLAUDE_WEB,
+    // Apple
+    Crawler.APPLE_BOT,
+    Crawler.APPLE_BOT_EXTENDED,
+    // Atlassian
+    Crawler.ATLASSIAN_BOT,
+    // Brave
+    Crawler.BRAVE_BOT,
+    // ByteDance
+    Crawler.BYTEDANCE_BYTESPIDER,
+    Crawler.BYTEDANCE_TIKTOKSPIDER,
+    // Cloudflare
+    Crawler.CLOUDFLARE_AUTORAG,
+    // Cohere
+    Crawler.COHERE_TRAINING_DATA_CRAWLER,
+    // Common Crawl
+    Crawler.COMMON_CRAWL_CCBOT,
+    // Coveo
+    Crawler.COVEO_BOT,
+    // DataForSeo
+    Crawler.DATAFORSEO_BOT,
+    // DeepSeek
+    Crawler.DEEPSEEK_BOT,
+    // Diffbot
+    Crawler.DIFFBOT,
+    // Google
+    Crawler.GOOGLE_EXTENDED,
+    Crawler.GOOGLE_NOTEBOOKLM,
+    Crawler.GOOGLE_OTHER,
+    Crawler.GOOGLE_OTHER_IMAGE,
+    Crawler.GOOGLE_OTHER_VIDEO,
+    Crawler.GOOGLE_CLOUDVERTEXBOT,
+    // Hive AI
+    Crawler.HIVE_IMAGESIFTBOT,
+    // Huawei
+    Crawler.HUAWEI_PETALBOT,
+    Crawler.HUAWEI_PANGUBOT,
+    // Hugging Face
+    Crawler.HUGGINGFACE_BOT,
+    // Kangaroo
+    Crawler.KANGAROO_BOT,
+    // Mendable.ai
+    Crawler.FIRECRAWL_AGENT,
+    // Meta
+    Crawler.META_FACEBOOKBOT,
+    Crawler.META_EXTERNALAGENT,
+    Crawler.META_WEBINDEXER,
+    // OpenAI
+    Crawler.OPENAI_GPTBOT,
+    Crawler.OPENAI_SEARCH_BOT,
+    // Perplexity
+    Crawler.PERPLEXITY_BOT,
+    // Replicate
+    Crawler.REPLICATE_BOT,
+    // Runpod
+    Crawler.RUNPOD_BOT,
+    // SB Intuitions
+    Crawler.SB_INTUITIONS_BOT,
+    // Semrush
+    Crawler.SEMRUSH_BOT_CONTENTSHAKE,
+    Crawler.SEMRUSH_BOT_SWA,
+    // Timpi
+    Crawler.TIMPI_BOT,
+    // Together AI
+    Crawler.TOGETHER_BOT,
+    // Velen.io
+    Crawler.HUNTER_VELENPUBLICWEBCRAWLER,
+    // Vercel
+    Crawler.VERCEL_V0BOT,
+    // Webz.io
+    Crawler.WEBZIO_OMGILI,
+    Crawler.WEBZIO_OMGILI_BOT,
+    Crawler.WEBZIO_EXTENDED,
+    // X
+    Crawler.XAI_BOT,
+    // You.com
+    Crawler.YOU_BOT,
+    // Zhipu AI
+    Crawler.ZHIPU_CHATGLM_SPIDER
+]);
+const isBot = (ua) => BotTypes.includes(ua);
+exports.isBot = isBot;
+const isAIAssistant = (ua) => AIAssistants.includes(ua);
+exports.isAIAssistant = isAIAssistant;
+const isAICrawler = (ua) => AICrawlers.includes(ua);
+exports.isAICrawler = isAICrawler;
+//# sourceMappingURL=bot-detection.js.map

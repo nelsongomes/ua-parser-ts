@@ -1,8 +1,8 @@
 {
   "title": "UAParser.js",
   "name": "ua-parser-js",
-  "version": "2.0.10",
-  "author": "Faisal Salman <f@faisalman.com> (http://faisalman.com)",
+  "version": "1.0.0",
+  "author": "Nelson Gomes <nelson.ricardo.gomes@gmail.com>, Faisal Salman <f@faisalman.com> (http://faisalman.com)",
   "description": "Detect Browser, Engine, OS, CPU, and Device type/model from User-Agent & Client Hints data. Supports browser & node.js environment",
   "keywords": [
     "user-agent",
@@ -21,8 +21,8 @@
     "app-detection",
     "crawler-detection"
   ],
-  "homepage": "https://uaparser.dev",
   "contributors": [
+    "Nelson Gomes <nelson.ricardo.gomes@gmail.com>",
     "23tux <hubert.hoelzl@atalanda.com>",
     "Aamir Poonawalla <aamir@urx.com>",
     "Admas <mollases@users.noreply.github.com>",
@@ -193,86 +193,92 @@
     "Ziding Zhang <zidingz@gmail.com>"
   ],
   "type": "commonjs",
-  "types": "src/main/ua-parser.d.ts",
-  "main": "src/main/ua-parser.js",
-  "module": "src/main/ua-parser.mjs",
+  "types": "types/main/ua-parser.d.ts",
+  "main": "dist/cjs/main/ua-parser.js",
+  "module": "dist/esm/main/ua-parser.js",
   "browser": "dist/ua-parser.pack.js",
   "exports": {
     ".": {
-      "require": "./src/main/ua-parser.js",
-      "import": "./src/main/ua-parser.mjs",
-      "types": "./src/main/ua-parser.d.ts"
+      "types": "./types/main/ua-parser.d.ts",
+      "require": "./dist/cjs/main/ua-parser.js",
+      "import": "./dist/esm/main/ua-parser.js"
     },
     "./bot-detection": {
-      "require": "./src/bot-detection/bot-detection.js",
-      "import": "./src/bot-detection/bot-detection.mjs",
-      "types": "./src/bot-detection/bot-detection.d.ts"
+      "types": "./dist/cjs/bot-detection/bot-detection.d.ts",
+      "require": "./dist/cjs/bot-detection/bot-detection.js",
+      "import": "./dist/esm/bot-detection/bot-detection.js"
     },
     "./browser-detection": {
-      "require": "./src/browser-detection/browser-detection.js",
-      "import": "./src/browser-detection/browser-detection.mjs",
-      "types": "./src/browser-detection/browser-detection.d.ts"
+      "types": "./dist/cjs/browser-detection/browser-detection.d.ts",
+      "require": "./dist/cjs/browser-detection/browser-detection.js",
+      "import": "./dist/esm/browser-detection/browser-detection.js"
     },
     "./device-detection": {
-      "require": "./src/device-detection/device-detection.js",
-      "import": "./src/device-detection/device-detection.mjs",
-      "types": "./src/device-detection/device-detection.d.ts"
+      "types": "./dist/cjs/device-detection/device-detection.d.ts",
+      "require": "./dist/cjs/device-detection/device-detection.js",
+      "import": "./dist/esm/device-detection/device-detection.js"
     },
     "./enums": {
-      "require": "./src/enums/ua-parser-enums.js",
-      "import": "./src/enums/ua-parser-enums.mjs",
-      "types": "./src/enums/ua-parser-enums.d.ts"
+      "types": "./dist/cjs/enums/ua-parser-enums.d.ts",
+      "require": "./dist/cjs/enums/ua-parser-enums.js",
+      "import": "./dist/esm/enums/ua-parser-enums.js"
     },
     "./extensions": {
-      "require": "./src/extensions/ua-parser-extensions.js",
-      "import": "./src/extensions/ua-parser-extensions.mjs",
-      "types": "./src/extensions/ua-parser-extensions.d.ts"
+      "types": "./dist/cjs/extensions/ua-parser-extensions.d.ts",
+      "require": "./dist/cjs/extensions/ua-parser-extensions.js",
+      "import": "./dist/esm/extensions/ua-parser-extensions.js"
     },
     "./helpers": {
-      "require": "./src/helpers/ua-parser-helpers.js",
-      "import": "./src/helpers/ua-parser-helpers.mjs",
-      "types": "./src/helpers/ua-parser-helpers.d.ts"
+      "types": "./dist/cjs/helpers/ua-parser-helpers.d.ts",
+      "require": "./dist/cjs/helpers/ua-parser-helpers.js",
+      "import": "./dist/esm/helpers/ua-parser-helpers.js"
     }
   },
   "files": [
     "dist/*.?(m)js",
+    "dist/cjs",
+    "dist/esm",
     "dist/icons",
-    "src"
+    "src",
+    "types/main"
   ],
   "bin": "./script/cli.js",
   "sideEffects": false,
   "scripts": {
+    "bench": "ts-node script/benchmark.ts",
     "build": "./script/build-dist.sh && ./script/build-esm.js",
     "build+test": "npm run build && npm run test",
+    "build:ts": "tsc",
     "test": "./script/test-all.sh",
-    "test:dts-lint": "tsd --typings src/main/ua-parser.d.ts --files test/static/dts-lint.ts",
+    "test:dts-lint": "tsd --typings types/main/ua-parser.d.ts --files test/static/dts-lint.ts",
     "test:eslint": "eslint --no-config-lookup src",
-    "test:fuzz": "jazzer ./test/fuzz/redos.js --sync",
-    "test:jshint": "jshint src/main",
+    "test:fuzz": "jazzer ./test/fuzz/redos.ts --sync",
+    "test:jest": "jest",
     "test:lockfile-lint": "lockfile-lint -p package-lock.json",
-    "test:mocha": "mocha --recursive test/unit",
-    "test:nyc": "nyc --timeout=50000 --include=src/**/*.js npm run test",
+    "test:nyc": "nyc --timeout=50000 --include=src/**/*.ts npm run test",
     "test:playwright": "npx playwright install && playwright test test/e2e --browser all"
   },
   "dependencies": {
-    "detect-europe-js": "^0.1.2",
-    "is-standalone-pwa": "^0.1.1",
-    "ua-is-frozen": "^0.1.2"
+    "detect-europe-js": "0.1.2",
+    "is-standalone-pwa": "0.1.1",
+    "ua-is-frozen": "0.1.2"
   },
   "devDependencies": {
     "@babel/parser": "7.15.8",
     "@babel/traverse": "7.23.2",
-    "@jazzer.js/core": "^4.0.0",
-    "@playwright/test": "^1.57.0",
-    "eslint": "^9.39.1",
-    "jshint": "~2.13.6",
-    "lockfile-lint": "^4.14.1",
-    "mocha": "~8.2.0",
-    "nyc": "^18.0.0",
-    "requirejs": "2.3.2",
-    "safe-regex": "^2.1.1",
-    "tsd": "^0.29.0",
-    "uglify-js": "~3.19.3"
+    "@jazzer.js/core": "4.0.0",
+    "@playwright/test": "1.57.0",
+    "@types/jest": "29.5.14",
+    "@types/node": "20.19.41",
+    "esbuild": "0.28.0",
+    "eslint": "9.39.2",
+    "lockfile-lint": "4.14.1",
+    "nyc": "18.0.0",
+    "safe-regex": "2.1.1",
+    "ts-jest": "29.4.11",
+    "ts-node": "10.9.2",
+    "tsd": "0.29.0",
+    "typescript": "5.9.3"
   },
   "repository": {
     "type": "git",
@@ -304,5 +310,8 @@
       "type": "github",
       "url": "https://github.com/sponsors/faisalman"
     }
-  ]
+  ],
+  "overrides": {
+    "uuid@>=8.0.0 <11.1.1": "11.1.1"
+  }
 }

@@ -1,23 +1,32 @@
 #!/usr/bin/env bash
 
-SRC_PATH="src/main/ua-parser.js"
+CJS_SRC="dist/cjs/main/ua-parser.js"
+ESM_SRC="dist/esm/main/ua-parser.js"
+BROWSER_IIFE="dist/ua-parser.iife.js"
 MIN_PATH="dist/ua-parser.min.js"
 PACK_PATH="dist/ua-parser.pack.js"
-
-SRC_PATH_MJS="src/main/ua-parser.mjs"
 MIN_PATH_MJS="dist/ua-parser.min.mjs"
 PACK_PATH_MJS="dist/ua-parser.pack.mjs"
 
-# minified
+# compile TypeScript (CJS)
+npx tsc -p tsconfig.cjs.json
+
+# compile TypeScript (ESM)
+npx tsc -p tsconfig.esm.json
+
+# browser bundle (IIFE, global UAParser) via esbuild
+# --footer unwraps the named export: { UAParser: fn } -> fn
+IIFE_FOOTER='UAParser=UAParser.UAParser;'
+
 echo "Generate ${MIN_PATH}"
-uglifyjs $SRC_PATH -o $MIN_PATH --comments "/^ UA/"
+npx esbuild src/main/ua-parser.ts --bundle --platform=browser --format=iife --global-name=UAParser --legal-comments=inline --minify "--footer:js=${IIFE_FOOTER}" --outfile=$MIN_PATH
 
-echo "Generate ${MIN_PATH_MJS}"
-uglifyjs $SRC_PATH_MJS -o $MIN_PATH_MJS --comments "/^ UA/" --module
-
-# packed
 echo "Generate ${PACK_PATH}"
-uglifyjs $SRC_PATH -o $PACK_PATH --comments "/^ UA/" --compress --mangle
+npx esbuild src/main/ua-parser.ts --bundle --platform=browser --format=iife --global-name=UAParser --legal-comments=inline --minify "--footer:js=${IIFE_FOOTER}" --outfile=$PACK_PATH
+
+# ESM minified
+echo "Generate ${MIN_PATH_MJS}"
+npx esbuild src/main/ua-parser.ts --bundle --platform=browser --format=esm --legal-comments=inline --minify --outfile=$MIN_PATH_MJS
 
 echo "Generate ${PACK_PATH_MJS}"
-uglifyjs $SRC_PATH_MJS -o $PACK_PATH_MJS --comments "/^ UA/" --compress --mangle --module
+cp $MIN_PATH_MJS $PACK_PATH_MJS
